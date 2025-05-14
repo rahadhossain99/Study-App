@@ -1,0 +1,1360 @@
+/*
+   =============================================
+   === Smart Study Planner - Ultimate CSS ===
+   =============================================
+
+   This CSS file implements a modern, clean, and responsive UI design
+   using a variable-based design system inspired by modern frameworks.
+   It includes styles for:
+   - Global variables for colors, spacing, typography, shadows, etc.
+   - Base element styling and reset.
+   - App header with mode toggle.
+   - Main content layout using CSS Grid.
+   - Card-like styling for sections with smooth animations.
+   - Enhanced Daily Plan section with distinct date/summary and task input areas.
+   - Beautifully styled task list with completion and highlight states.
+   - Weekly Routine section with toggleable visibility.
+   - Responsive Routine Table supporting both Table and Card layouts via JS class toggle.
+   - Clearly defined Button Group styling.
+   - Responsive adjustments for various screen sizes.
+   - Improved accessibility with focus states.
+   - Optimized Print styles for clean printouts.
+
+*/
+
+/* --- CSS Design System Variables --- */
+:root {
+    /* Colors */
+    --color-primary: #2c3e50;         /* Midnight Blue - Main Brand Color */
+    --color-primary-rgb: 44, 62, 80;  /* RGB values for primary color */
+    --color-secondary: #1abc9c;       /* Turquoise - Accent, Action Color */
+    --color-secondary-rgb: 26, 188, 156; /* RGB values for secondary color */
+    --color-accent: #f39c12;          /* Orange - Highlights, Warnings, Buttons */
+    --color-accent-rgb: 243, 156, 18; /* RGB values for accent color */
+
+    --color-text-primary: #34495e;    /* Wet Asphalt - Main Text */
+    --color-text-secondary: #7f8c8d;  /* Grey - Secondary Text, Labels */
+    --color-text-light: #bdc3c7;      /* Lighter Grey */
+
+    --color-background: #ecf0f1;      /* Clouds - Light Grey Background */
+    --color-background-dark: #dfe6e9; /* Slightly darker background for view mode */
+    --color-surface: #ffffff;         /* White - Card/Content Backgrounds */
+    --color-surface-light: #f8f9fa;   /* Very light surface */
+    --color-surface-darker: #fcfcfc;  /* Slightly darker surface for list items */
+
+    --color-border: #bdc3c7;          /* Silver - Subtle Borders */
+    --color-divider: #dde1e2;         /* Lighter Grey - Dividers */
+
+    --color-success: #2ecc71;         /* Emerald - Success */
+    --color-warning: #f1c40f;         /* Sunflower - Warning */
+    --color-error: #e74c3c;           /* Alizarin - Error, Danger (Delete) */
+
+    --color-info-bg: #e0f7fa;        /* Light Cyan - For Info Boxes background */
+    --color-info-border: #b2ebf2;    /* Cyan - Info Border */
+
+    /* Opacity values for consistent transparency */
+    --opacity-low: 0.08;
+    --opacity-medium: 0.15;
+    --opacity-high: 0.3;
+    --opacity-subtle: 0.1;
+
+    /* Spacing Scale (Relative to base font size or general scale) */
+    --space-xs: 0.25rem; /* 4px */
+    --space-sm: 0.5rem;  /* 8px */
+    --space-md: 0.75rem; /* 12px */
+    --space-lg: 1rem;    /* 16px */
+    --space-xl: 1.5rem;  /* 24px */
+    --space-2xl: 2rem;   /* 32px */
+    --space-3xl: 3rem;   /* 48px */
+
+    /* Border Radius Scale */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+
+    /* Shadows (Adjust opacity and spread for desired effect) */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, var(--opacity-low));
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+    --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.2);
+    --shadow-interactive: 0 6px 14px rgba(0, 0, 0, 0.12); /* For hover/active states */
+
+
+    /* Typography */
+    --font-primary: 'Noto Sans Bengali', 'Arial', sans-serif;
+    --font-secondary: 'Poppins', sans-serif;
+
+    --text-xs: 0.75rem; /* 12px */
+    --text-sm: 0.875rem; /* 14px */
+    --text-base: 1rem;   /* 16px */
+    --text-lg: 1.125rem; /* 18px */
+    --text-xl: 1.25rem;  /* 20px */
+    --text-2xl: 1.5rem;  /* 24px */
+    --text-3xl: 1.875rem; /* 30px */
+    --text-4xl: 2.25rem; /* 36px */
+
+    /* Transitions */
+    --transition-speed-slow: 0.4s;
+    --transition-speed-normal: 0.3s;
+    --transition-speed-fast: 0.2s;
+    --transition-timing-ease: ease-in-out;
+
+    /* Specific component colors/styles */
+    --editable-cell-bg: #fffbe0; /* Light yellow for editing */
+    --completed-task-bg: rgba(var(--color-success-rgb), var(--opacity-subtle)); /* Light green */
+    --highlight-task-bg: rgba(var(--color-accent-rgb), var(--opacity-subtle)); /* Light orange/pink */
+    --highlight-task-border: var(--color-accent); /* Orange */
+}
+
+/* --- Base Styles & Reset --- */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-primary);
+    font-size: var(--text-base);
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: background-color var(--transition-speed-normal) var(--transition-timing-ease);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* Style for body when in view mode */
+body.view-mode {
+    background-color: var(--color-background-dark);
+}
+
+
+/* --- App Header --- */
+.app-header {
+    background: var(--color-primary);
+    color: var(--color-surface);
+    padding: var(--space-lg) var(--space-2xl);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-md);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+}
+.app-header h1 {
+    font-family: var(--font-secondary);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin: 0;
+    color: var(--color-surface); /* Ensure title is white */
+}
+
+/* --- Main App Container --- */
+.app-container {
+    display: grid;
+    grid-template-columns: 1fr; /* Default to single column */
+    gap: var(--space-2xl);
+    padding: var(--space-2xl);
+    width: 100%;
+    max-width: 1400px; /* Increased max width */
+    margin: 0 auto;
+    flex-grow: 1;
+}
+
+/* --- Content Section Card Styling --- */
+.content-section {
+    background-color: var(--color-surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    padding: var(--space-2xl);
+    opacity: 0;
+    transform: translateY(var(--space-xl));
+    animation: contentFadeInUp 0.6s var(--transition-timing-ease) forwards;
+    overflow: hidden; /* Hide content overflow initially */
+    display: flex;
+    flex-direction: column;
+}
+.daily-view-section { animation-delay: 0.1s; }
+.routine-view-section { animation-delay: 0.2s; }
+
+@keyframes contentFadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Section Headers */
+.content-section h2 {
+    font-family: var(--font-secondary);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-md);
+    border-bottom: 2px solid var(--color-divider);
+    text-align: center;
+    letter-spacing: 0.3px;
+}
+.content-section h3 {
+    font-family: var(--font-secondary);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--color-secondary);
+    margin-bottom: var(--space-lg); /* Use spacing scale */
+    padding-bottom: var(--space-sm); /* Use spacing scale */
+    border-bottom: 1px dashed var(--color-divider); /* Lighter dashed border */
+    text-align: left; /* Align H3 left */
+}
+
+
+/* --- Daily View Section Specific Enhancements --- */
+
+/* Main Daily View Section */
+.daily-view-section {
+    background-color: var(--color-surface-light); /* Use light surface */
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    padding: var(--space-2xl);
+}
+
+/* Date Controls and Summary Box */
+.date-controls-summary {
+    background: linear-gradient(135deg, var(--color-info-bg) 0%, var(--color-surface) 100%);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-2xl);
+    text-align: center;
+    border: 1px solid var(--color-info-border);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.date-navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
+    flex-wrap: wrap;
+    width: 100%;
+}
+.date-navigation button {
+    background-color: rgba(var(--color-primary-rgb), var(--opacity-low));
+    border: none;
+    font-size: var(--text-2xl);
+    color: var(--color-primary);
+    cursor: pointer;
+    padding: var(--space-xs) var(--space-sm);
+    transition: background-color var(--transition-speed-fast) var(--transition-timing-ease), color var(--transition-speed-fast) var(--transition-timing-ease), transform var(--transition-speed-fast) var(--transition-timing-ease);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.date-navigation button:hover {
+    background-color: rgba(var(--color-primary-rgb), var(--opacity-medium));
+    color: var(--color-accent);
+    transform: scale(1.1);
+}
+.date-navigation button:active {
+     transform: scale(0.95);
+}
+#dateInput {
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-base);
+    font-family: var(--font-primary);
+    outline-color: var(--color-secondary);
+    cursor: pointer;
+    min-width: 180px;
+    transition: border-color var(--transition-speed-fast) var(--transition-timing-ease), box-shadow var(--transition-speed-fast) var(--transition-timing-ease);
+    background-color: var(--color-surface);
+}
+#dateInput:focus {
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.2);
+}
+
+
+.daily-summary-info {
+     width: 100%;
+     text-align: left;
+     margin-top: var(--space-md);
+}
+.daily-summary-info h4 {
+    font-size: var(--text-base);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-sm);
+    font-weight: 600;
+    border-bottom: 1px dashed var(--color-divider);
+    padding-bottom: var(--space-sm);
+}
+.daily-summary-info h4 span, .daily-summary-info p span {
+    color: var(--color-primary);
+    font-weight: 500;
+}
+#currentTimeDisplay {
+    color: var(--color-accent);
+    font-weight: 600;
+    font-family: var(--font-secondary);
+    font-size: 1em;
+}
+.daily-summary-info p {
+    font-size: var(--text-base);
+    color: var(--color-text-secondary);
+    margin-top: var(--space-sm);
+    display: inline-block;
+    margin-right: var(--space-xs);
+}
+
+/* Enhanced Styling for Routine Subjects Display - Card-like block */
+#summaryRoutineSubjects {
+    display: block;
+    background-color: rgba(var(--color-secondary-rgb), var(--opacity-subtle));
+    color: var(--color-secondary);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(var(--color-secondary-rgb), var(--opacity-high)); /* Slightly darker border */
+    margin-top: var(--space-sm);
+    font-weight: 600;
+    line-height: 1.5;
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+    width: 100%;
+    word-break: break-word; /* Ensure long subjects break */
+}
+#summaryRoutineSubjects:empty {
+    display: none;
+}
+
+
+/* --- Task Management --- */
+.task-management {
+    padding: var(--space-md) 0;
+}
+
+/* Style for the "Add New Task" box */
+.task-input-form-container {
+     border: 1px solid var(--color-border);
+     border-radius: var(--radius-md);
+     padding: var(--space-lg);
+     background-color: var(--color-surface);
+     box-shadow: var(--shadow-sm);
+     margin-bottom: var(--space-xl);
+     display: flex;
+     flex-direction: column;
+}
+.task-input-form h3 {
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px dashed var(--color-border);
+    font-size: var(--text-lg);
+    color: var(--color-text-primary);
+    text-align: left;
+}
+
+.task-input-form {
+    display: flex;
+    gap: var(--space-md);
+    align-items: center;
+    flex-wrap: wrap;
+}
+.task-input-form input[type="text"],
+.task-input-form input[type="time"],
+.task-input-form select {
+    flex-grow: 1;
+    padding: var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-base);
+    font-family: var(--font-primary);
+    transition: border-color var(--transition-speed-fast) var(--transition-timing-ease), box-shadow var(--transition-speed-fast) var(--transition-timing-ease);
+}
+.task-input-form input:focus, .task-input-form select:focus {
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 3px rgba(var(--color-secondary-rgb), 0.2);
+}
+.task-input-form select { min-width: 180px; flex-grow: 0.5; }
+.task-input-form input[type="time"] { min-width: 100px; flex-grow: 0.3; }
+
+/* --- Buttons --- */
+.btn {
+    background-color: var(--color-primary);
+    color: var(--color-surface);
+    padding: var(--space-md) var(--space-lg);
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--text-base);
+    font-weight: 600;
+    margin: 0; /* Managed by parent gap */
+    transition: background-color var(--transition-speed-fast) var(--transition-timing-ease), transform 0.1s var(--transition-timing-ease), box-shadow var(--transition-speed-fast) var(--transition-timing-ease);
+    font-family: var(--font-secondary);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    text-decoration: none;
+    box-shadow: var(--shadow-sm);
+}
+.task-input-form .btn {
+     padding: var(--space-md) var(--space-lg);
+     flex-shrink: 0;
+}
+
+
+.btn:hover {
+    background-color: #34495e;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-interactive); /* Use interactive shadow */
+}
+.btn:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+}
+.btn-secondary { background-color: var(--color-secondary); }
+.btn-secondary:hover { background-color: #16a085; }
+.btn-accent { background-color: var(--color-accent); }
+.btn-accent:hover { background-color: #e67e22; }
+
+.btn-header-action {
+    font-size: var(--text-base);
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--color-accent);
+    box-shadow: none;
+    margin: 0;
+}
+.btn-header-action:hover {
+    background-color: #d35400;
+    transform: none;
+    box-shadow: none;
+}
+.btn-print {
+    background-color: var(--color-secondary); /* Use secondary color for print */
+}
+.btn-print:hover {
+    background-color: #16a085;
+}
+
+#toggleRoutineLayoutBtn i { margin-right: var(--space-xs); margin-left: 0; } /* Icon on the left */
+
+
+/* --- Task List --- */
+#taskList {
+    list-style: none;
+    padding: 0;
+}
+#taskList li {
+    background-color: var(--color-surface);
+    padding: var(--space-md) var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-sm);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all var(--transition-speed-normal) var(--transition-timing-ease);
+    box-shadow: var(--shadow-sm);
+    opacity: 0;
+    transform: translateY(var(--space-sm));
+    animation: taskItemLoadInAnimation 0.4s var(--transition-timing-ease) forwards;
+}
+@keyframes taskItemLoadInAnimation {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+body:not(.view-mode) #taskList li:hover:not(.completed) {
+    border-left: 5px solid var(--color-primary);
+    box-shadow: var(--shadow-md);
+    transform: translateX(var(--space-xs));
+}
+
+#taskList li.completed {
+    background-color: var(--completed-task-bg);
+    text-decoration: line-through;
+    color: var(--color-text-secondary);
+    opacity: 0.9;
+}
+#taskList li.highlight:not(.completed) {
+    background-color: var(--highlight-task-bg);
+    border-color: var(--highlight-task-border);
+    border-left: 5px solid var(--highlight-task-border);
+    box-shadow: var(--shadow-md);
+}
+body:not(.view-mode) #taskList li.highlight:hover:not(.completed) {
+     background-color: rgba(var(--color-accent-rgb), var(--opacity-medium));
+     box-shadow: var(--shadow-lg);
+}
+
+
+#taskList li input[type="checkbox"] {
+    margin-right: var(--space-md);
+    min-width: 20px;
+    min-height: 20px;
+    accent-color: var(--color-secondary);
+    cursor: pointer;
+    flex-shrink: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--transition-speed-fast) var(--transition-timing-ease), border-color var(--transition-speed-fast) var(--transition-timing-ease);
+    outline-offset: 2px;
+}
+#taskList li input[type="checkbox"]::after {
+    content: "\f00c";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: var(--color-surface);
+    font-size: 0.9em;
+    display: none;
+}
+#taskList li input[type="checkbox"]:checked {
+    background-color: var(--color-secondary);
+    border-color: var(--color-secondary);
+}
+#taskList li input[type="checkbox"]:checked::after {
+    display: block;
+}
+#taskList li input[type="checkbox"]:focus-visible {
+    outline: 3px solid var(--color-accent);
+}
+body.view-mode #taskList li input[type="checkbox"] {
+     pointer-events: auto !important;
+     cursor: pointer !important;
+}
+
+
+#taskList li .task-content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    flex-grow: 1;
+    gap: var(--space-sm);
+    word-break: break-word;
+    min-width: 0;
+}
+#taskList li .task-subject,
+#taskList li .task-time,
+#taskList li .task-text {
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-base);
+    transition: background-color var(--transition-speed-fast) var(--transition-timing-ease);
+     line-height: 1.4;
+}
+#taskList li .task-subject {
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-weight: 600;
+    flex-shrink: 0;
+}
+#taskList li .task-time {
+    background-color: var(--color-surface-light); /* Light surface background */
+    color: var(--color-text-secondary);
+    font-size: 0.9em;
+    flex-shrink: 0;
+}
+#taskList li .task-text {
+    flex-grow: 1;
+    min-width: 100px;
+    background-color: transparent;
+}
+body:not(.view-mode) #taskList li .task-subject[contenteditable="true"],
+body:not(.view-mode) #taskList li .task-text[contenteditable="true"] {
+    background-color: var(--editable-cell-bg);
+    cursor: text;
+    outline: 1px dashed var(--color-primary);
+}
+body:not(.view-mode) #taskList li .task-subject[contenteditable="true"]:focus,
+body:not(.view-mode) #taskList li .task-text[contenteditable="true"]:focus {
+    background-color: var(--color-surface);
+    outline: 2px solid var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+#taskList li .delete-task {
+    background: none; border: none;
+    color: var(--color-error);
+    cursor: pointer;
+    font-size: var(--text-lg);
+    padding: var(--space-xs);
+    transition: color var(--transition-speed-fast) var(--transition-timing-ease), transform var(--transition-speed-fast) var(--transition-timing-ease);
+    flex-shrink: 0;
+    margin-left: var(--space-md);
+}
+#taskList li .delete-task:hover { color: #c0392b; transform: scale(1.1); }
+#taskList li .delete-task:active { transform: scale(1.05); }
+
+#taskList li.no-tasks {
+    justify-content: center;
+    color: var(--color-text-secondary);
+    font-style: italic;
+    padding: var(--space-xl);
+    border-style: dashed;
+    background-color: #fcfcfc;
+    text-align: center;
+    font-size: var(--text-base);
+}
+
+/* --- Routine View Section --- */
+.routine-toggle-header {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md) var(--space-xl);
+    margin-bottom: var(--space-lg);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    transition: background-color var(--transition-speed-fast) var(--transition-timing-ease), box-shadow var(--transition-speed-fast) var(--transition-timing-ease);
+     user-select: none;
+}
+.routine-toggle-header:hover {
+    background-color: var(--color-background);
+    box-shadow: var(--shadow-sm);
+}
+.routine-toggle-header:active { background-color: #dcdfe4; }
+
+.routine-toggle-header i { margin-left: var(--space-sm); transition: transform var(--transition-speed-normal) var(--transition-timing-ease); font-size: 0.9em; }
+.routine-toggle-header.collapsed i { transform: rotate(-90deg); }
+
+/* Container for the Routine Table/Cards */
+.routine-table-container {
+    overflow: hidden; /* Hide content when collapsed */
+    max-height: 2000px; /* Sufficiently large initial height */
+    transition: max-height var(--transition-speed-slow) var(--transition-timing-ease), opacity var(--transition-speed-slow) var(--transition-timing-ease);
+    opacity: 1;
+    margin-bottom: var(--space-xl); /* Space below the container before button group */
+}
+.routine-table-container.collapsed {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* --- Default Routine Table View --- */
+#routineTable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-border);
+     min-width: 0; /* Reset min-width for flexibility */
+}
+#routineTable thead {
+    background: var(--color-primary);
+    color: var(--color-surface);
+}
+#routineTable th, #routineTable td {
+    padding: var(--space-md) var(--space-lg);
+    text-align: left;
+    border-bottom: 1px solid var(--color-divider);
+    border-right: 1px solid var(--color-divider);
+    font-size: var(--text-base);
+     word-break: break-word; /* Allow breaking long words */
+     vertical-align: top; /* Align cell content to top */
+     white-space: normal; /* Allow text wrapping */
+     overflow: visible; /* Ensure content is not clipped */
+     text-overflow: clip; /* No ellipsis in table view */
+     max-width: none; /* Remove max-width constraint */
+     min-width: auto; /* Allow cells to shrink */
+}
+#routineTable th {
+    font-weight: 700;
+    text-align: center;
+    border-bottom-width: 2px;
+    letter-spacing: 0.2px;
+}
+#routineTable th:last-child,
+#routineTable td:last-child {
+    border-right: none;
+}
+
+#routineTable tbody tr:last-child td { border-bottom: none; }
+
+#routineTable td:first-child { /* Day column */
+    font-weight: 600;
+    color: var(--color-secondary);
+    background-color: var(--color-surface-light); /* Use light surface */
+    text-align: center;
+    border-right: 1px solid var(--color-border);
+}
+
+/* Subtle striped rows */
+#routineTable tbody tr:nth-child(even) td { background-color: var(--color-surface-darker); } /* Use darker surface */
+#routineTable tbody tr:nth-child(odd) td { background-color: var(--color-surface); }
+
+body:not(.view-mode) #routineTable tbody tr:hover td {
+    background-color: var(--hover-bg-color); /* Defined as #f8f9f9 */
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.05); /* Inner shadow on hover */
+}
+
+/* Specific radius for table corners */
+#routineTable thead tr:first-child th:first-child { border-top-left-radius: var(--radius-md); }
+#routineTable thead tr:first-child th:last-child { border-top-right-radius: var(--radius-md); }
+#routineTable tbody tr:last-child td:first-child { border-bottom-left-radius: var(--radius-md); }
+#routineTable tbody tr:last-child td:last-child { border-bottom-right-radius: var(--radius-md); }
+#routineTable tbody tr:only-child td:first-child { border-bottom-left-radius: var(--radius-md); } /* Handles tables with single row */
+#routineTable tbody tr:only-child td:last-child { border-bottom-right-radius: var(--radius-md); }
+
+
+/* Editable Cell Styles - Apply to both views */
+body:not(.view-mode) #routineTable td[contenteditable="true"] {
+    background-color: var(--editable-cell-bg);
+    cursor: text;
+    outline: 1px dashed var(--color-primary);
+    transition: background-color var(--transition-speed-fast) var(--transition-timing-ease), outline-color var(--transition-speed-fast) var(--transition-timing-ease);
+}
+body:not(.view-mode) #routineTable td[contenteditable="true"]:focus {
+    background-color: var(--color-surface);
+    outline: 2px solid var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+
+/* --- Routine Card View --- */
+/* Apply these styles when the container has the 'is-card-layout' class */
+.routine-table-container.is-card-layout {
+    overflow: visible;
+    max-height: none;
+    opacity: 1;
+    pointer-events: auto;
+     overflow-x: visible; /* Ensure no horizontal scroll here */
+     padding-bottom: 0;
+}
+
+.routine-table-container.is-card-layout #routineTable {
+    display: block; /* Table as a block */
+    border: none;
+    box-shadow: none;
+    border-spacing: 0;
+    border-radius: 0;
+    width: 100%;
+    min-width: auto;
+}
+
+.routine-table-container.is-card-layout #routineTable thead { display: none; } /* Hide header in card view */
+
+.routine-table-container.is-card-layout #routineTable tbody {
+    display: block; /* Tbody as a block */
+}
+
+.routine-table-container.is-card-layout #routineTable tr {
+    /* Style rows as cards */
+    display: block;
+    margin-bottom: var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--transition-speed-fast) var(--transition-timing-ease);
+}
+/* Remove background stripes from rows/cells when in card layout */
+.routine-table-container.is-card-layout #routineTable tbody tr:nth-child(even) td,
+.routine-table-container.is-card-layout #routineTable tbody tr:nth-child(odd) td {
+    background-color: transparent;
+}
+body:not(.view-mode) .routine-table-container.is-card-layout #routineTable tbody tr:hover {
+    background-color: var(--color-surface); /* No row background change on hover */
+}
+body:not(.view-mode) .routine-table-container.is-card-layout #routineTable tbody tr:hover td {
+     background-color: var(--hover-bg-color); /* Apply hover bg to cells */
+     box-shadow: none;
+}
+
+
+.routine-table-container.is-card-layout #routineTable td {
+    /* Style cells as label-value pairs */
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    text-align: right !important;
+    padding: var(--space-sm) 0;
+    border: none;
+    border-bottom: 1px dashed var(--color-divider);
+    word-break: break-word;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    max-width: none;
+    min-width: auto;
+}
+.routine-table-container.is-card-layout #routineTable td:last-child {
+    border-bottom: none;
+}
+
+.routine-table-container.is-card-layout #routineTable td:first-child {
+    /* Day cell styling in card view */
+    font-weight: bold;
+    color: var(--color-primary);
+    background-color: transparent;
+    text-align: left !important;
+    padding-bottom: var(--space-sm);
+    margin-bottom: var(--space-sm);
+    border-bottom: 2px solid var(--color-primary);
+    display: block;
+    width: 100%;
+}
+
+/* Add data labels for cells in card view */
+.routine-table-container.is-card-layout #routineTable td::before {
+    content: attr(data-label);
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin-right: var(--space-sm);
+    text-align: left;
+    flex-shrink: 0;
+    font-size: 0.95em;
+}
+.routine-table-container.is-card-layout #routineTable td:first-child::before { display: none; }
+
+
+/* --- Routine Button Group Styling --- */
+.routine-view-section .button-group {
+    display: flex;
+    justify-content: center; /* Center the group */
+    gap: var(--space-lg); /* Space between buttons */
+    flex-wrap: wrap; /* Allow wrapping */
+    align-items: center; /* Align items vertically */
+    margin-top: var(--space-2xl); /* Space below the container */
+    /* Optional: Add a border or background to the group */
+    /* border-top: 1px dashed var(--color-divider); */
+    /* padding-top: var(--space-lg); */
+}
+/* Remove default margin from buttons inside the button-group */
+.routine-view-section .button-group .btn {
+    margin: 0;
+}
+
+
+/* --- Responsive Adjustments --- */
+
+/* Desktop Layout (2 columns) */
+@media (min-width: 1024px) {
+    .app-container {
+        grid-template-columns: 2fr 1.2fr; /* Daily View wider */
+    }
+    .routine-view-section {
+        position: sticky;
+        /* Calculate sticky top: header height + header padding + container padding */
+        top: calc(var(--space-lg) + var(--space-lg) + var(--space-2xl) + var(--space-2xl));
+        align-self: start;
+        max-height: calc(100vh - (var(--space-lg) + var(--space-lg) + var(--space-2xl) + var(--space-2xl) + var(--space-2xl)));
+        overflow-y: auto;
+        padding-right: var(--space-sm); /* Space for scrollbar */
+    }
+     /* Custom Scrollbar Styles for Sticky Section */
+     .routine-view-section::-webkit-scrollbar { width: 8px; }
+     .routine-view-section::-webkit-scrollbar-track { background: var(--color-background); border-radius: var(--radius-sm); }
+     .routine-view-section::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: var(--radius-sm); }
+     .routine-view-section::-webkit-scrollbar-thumb:hover { background: var(--color-text-secondary); }
+
+    /* Ensure Routine Table Container overflow is visible in desktop sticky view */
+    /* It was hidden by default, but the sticky overflow-y handles main scrolling */
+    .routine-view-section .routine-table-container {
+        overflow: visible;
+        max-height: none; /* Don't limit height here */
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* Ensure horizontal scroll is NOT needed on desktop */
+    .routine-table-container:not(.is-card-layout) {
+         overflow-x: visible;
+         padding-bottom: 0;
+    }
+     .routine-table-container:not(.is-card-layout) #routineTable {
+         min-width: 0; /* Reset min-width */
+         width: 100%; /* Use full width */
+     }
+      /* Ensure cells in desktop table view don't force minimum width */
+      .routine-table-container:not(.is-card-layout) #routineTable th,
+      .routine-table-container:not(.is-card-layout) #routineTable td {
+           min-width: auto;
+           max-width: none;
+           white-space: normal; /* Allow wrapping */
+      }
+
+
+}
+
+/* Tablet and Mobile Layout (< 1024px) */
+@media (max-width: 1023px) {
+    .app-header { padding: var(--space-md) var(--space-xl); gap: var(--space-md); }
+    .app-header h1 { font-size: var(--text-xl); }
+    .btn-header-action { font-size: var(--text-base); padding: var(--space-sm) var(--space-md); }
+
+    .app-container { padding: var(--space-xl); gap: var(--space-xl);}
+    .content-section { padding: var(--space-xl); }
+    .content-section h2 { font-size: var(--text-xl); margin-bottom: var(--space-lg); }
+    .content-section h3 { font-size: var(--text-lg); margin-bottom: var(--space-lg); }
+
+    /* Daily View Specifics adjustments */
+    .daily-view-section { padding: var(--space-xl); }
+    .date-controls-summary { padding: var(--space-lg); margin-bottom: var(--space-xl); }
+    .daily-summary-info h4 { font-size: var(--text-base); margin-bottom: var(--space-sm); }
+    .daily-summary-info p { font-size: var(--text-base); }
+    #dateInput { min-width: 140px; }
+
+    .task-input-form-container { margin-bottom: var(--space-lg); padding: var(--space-lg); }
+     .task-input-form h3 { margin-bottom: var(--space-md); }
+
+    .task-input-form { gap: var(--space-sm); }
+    .task-input-form input[type="text"],
+    .task-input-form input[type="time"],
+    .task-input-form select { padding: var(--space-sm); }
+    .task-input-form select { min-width: 160px; }
+    .task-input-form input[type="time"] { min-width: 90px; }
+     .task-input-form .btn { padding: var(--space-sm) var(--space-md); gap: var(--space-sm); }
+
+    #taskList li { padding: var(--space-sm) var(--space-md); margin-bottom: var(--space-sm); gap: var(--space-md);}
+    #taskList li input[type="checkbox"] { margin-right: var(--space-sm); }
+    #taskList li .task-content { gap: var(--space-xs); }
+    #taskList li .task-subject, #taskList li .task-time, #taskList li .task-text { padding: var(--space-xs); }
+    #taskList li .delete-task { font-size: var(--text-base); padding: var(--space-xs); margin-left: var(--space-sm); }
+
+
+    /* Routine Table - Horizontal Scroll for Table View on smaller screens */
+    .routine-table-container:not(.is-card-layout) {
+        overflow-x: auto; /* Enable horizontal scrolling */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on touch */
+        padding-bottom: var(--space-sm); /* Space for scrollbar */
+        margin-bottom: var(--space-lg); /* Adjusted margin below container */
+    }
+
+    .routine-table-container:not(.is-card-layout) #routineTable {
+         min-width: 600px; /* Ensure minimum width to force scroll */
+         width: auto; /* Allow width to be determined by content/min-width */
+         display: table;
+    }
+     /* Reset cell widths/wrapping for the scrolling table view */
+     .routine-table-container:not(.is-card-layout) #routineTable th,
+     .routine-table-container:not(.is-card-layout) #routineTable td {
+          padding: var(--space-sm); /* Reduced padding */
+          white-space: normal; /* Allow wrapping */
+          overflow: visible;
+          text-overflow: clip;
+          max-width: none;
+          min-width: auto;
+     }
+     /* Further reduce padding on very small screens */
+     @media (max-width: 767px) {
+          .routine-table-container:not(.is-card-layout) #routineTable th,
+          .routine-table-container:not(.is-card-layout) #routineTable td {
+               padding: var(--space-xs) var(--space-sm); /* Even tighter padding */
+          }
+          .routine-table-container:not(.is-card-layout) #routineTable {
+               min-width: 550px; /* Adjust min-width for smallest screens */
+          }
+     }
+
+      /* Custom Scrollbar Styles for Routine Table Container in scroll mode */
+     .routine-table-container:not(.is-card-layout)::-webkit-scrollbar {
+        height: 8px; /* Height of horizontal scrollbar */
+     }
+     .routine-table-container:not(.is-card-layout)::-webkit-scrollbar-track {
+        background: var(--color-background);
+        border-radius: var(--radius-sm);
+     }
+     .routine-table-container:not(.is-card-layout)::-webkit-scrollbar-thumb {
+        background: var(--color-border);
+        border-radius: var(--radius-sm);
+     }
+     .routine-table-container:not(.is-card-layout)::-webkit-scrollbar-thumb:hover {
+        background: var(--color-text-secondary);
+     }
+
+
+    .routine-view-section .button-group {
+        margin-top: var(--space-lg); /* Use spacing */
+        gap: var(--space-md); /* Reduced gap on tablet */
+    }
+}
+
+/* Mobile Specific Adjustments (< 768px) */
+@media (max-width: 767px) {
+    .app-header { padding: var(--space-md) var(--space-lg); gap: var(--space-sm); }
+    .app-header h1 { font-size: var(--text-xl); }
+    .btn-header-action { font-size: var(--text-base); padding: var(--space-sm) var(--space-md); }
+
+    .app-container { padding: var(--space-lg); gap: var(--space-lg);}
+    .content-section { padding: var(--space-lg); }
+    .content-section h2 { font-size: var(--text-xl); margin-bottom: var(--space-lg); }
+    .content-section h3 { font-size: var(--text-lg); margin-bottom: var(--space-lg); }
+
+     /* Daily View Specifics adjustments */
+    .daily-view-section { padding: var(--space-lg); }
+    .date-controls-summary { padding: var(--space-md); margin-bottom: var(--space-lg); }
+    .daily-summary-info h4 { font-size: var(--text-base); }
+    #dateInput { width: 100%; margin-top:var(--space-sm); min-width: unset; }
+    .date-navigation { gap: var(--space-md); margin-bottom: var(--space-md); }
+    .date-navigation button { font-size: var(--text-xl); padding: var(--space-xs); }
+
+    .task-input-form-container { margin-bottom: var(--space-lg); padding: var(--space-lg); }
+    .task-input-form h3 { margin-bottom: var(--space-md); }
+    .task-input-form { flex-direction: column; align-items: stretch; gap: var(--space-sm); }
+    .task-input-form input, .task-input-form select, .task-input-form button {
+        width: 100%; min-width: unset; padding: var(--space-sm);
+    }
+    .task-input-form select { order: 1; }
+    .task-input-form input[type="time"] { order: 2; }
+    .task-input-form input[type="text"] { order: 3; }
+    .task-input-form button { order: 4; margin-top: var(--space-sm); padding: var(--space-sm) var(--space-md); gap: var(--space-sm); }
+
+
+    #taskList li { flex-direction: column; align-items: flex-start; gap: var(--space-sm); padding: var(--space-md); margin-bottom: var(--space-sm); }
+    #taskList li input[type="checkbox"] { margin-right: var(--space-sm); }
+    #taskList li .task-content { width: 100%; flex-direction: column; align-items: flex-start; gap: var(--space-xs); min-width: unset;}
+    #taskList li .task-subject, #taskList li .task-time, #taskList li .task-text {
+        width: auto; max-width: 100%; padding: var(--space-xs);
+    }
+     #taskList li .delete-task {
+         align-self: flex-end;
+         margin-top: calc(-1 * var(--space-xl));
+         font-size: var(--text-base); padding: var(--space-xs);
+     }
+
+
+    .routine-view-section .button-group {
+        margin-top: var(--space-md);
+        gap: var(--space-sm); /* Reduced gap on smallest screen */
+    }
+
+}
+
+
+/* --- Accessibility & Focus States --- */
+/* Apply clear focus indicator using outline and box-shadow */
+:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+    /* Optional: Add a box-shadow ring for better visibility on some backgrounds */
+    box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), var(--opacity-high));
+    transition: box-shadow var(--transition-speed-fast) var(--transition-timing-ease); /* Add transition to focus effect */
+}
+/* Remove default outline for elements handled with custom focus styles */
+input:focus,
+select:focus,
+td[contenteditable="true"]:focus,
+.task-subject[contenteditable="true"]:focus,
+.task-text[contenteditable="true"]:focus,
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+input[type="checkbox"]:focus:not(:focus-visible)
+{
+     outline: none;
+}
+/* Add custom focus style for specific elements if needed, e.g., buttons */
+.btn:focus-visible {
+     /* Example: Use the default focus-visible style or add specific styles */
+     outline: 3px solid var(--color-accent);
+     outline-offset: 3px;
+     box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), var(--opacity-high));
+}
+/* Custom focus for checkbox */
+#taskList li input[type="checkbox"]:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+
+/* --- Print Styles --- */
+@media print {
+    body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-size: 10pt;
+        line-height: 1.4;
+    }
+
+    /* Hide elements not needed for print */
+    .app-header,
+    .task-input-form-container,
+    #taskList .delete-task,
+    #taskList input[type="checkbox"],
+    .routine-toggle-header,
+    .routine-view-section .button-group,
+    #modeToggleBtn,
+    /* Hide scrollbars in print */
+    .routine-view-section::-webkit-scrollbar,
+    .routine-table-container::-webkit-scrollbar,
+    #printRoutineBtn
+     {
+        display: none !important;
+    }
+    /* Ensure section titles are visible */
+    .daily-view-section h2, .routine-view-section h2 {
+         display: block !important;
+         color: #000 !important;
+         border-bottom-color: #ccc !important;
+         margin-bottom: 10px !important;
+         padding-bottom: 5px !important;
+         text-align: center !important;
+         font-size: 1.3em !important;
+    }
+
+
+    .app-container {
+        grid-template-columns: 1fr !important;
+        padding: 10mm !important;
+        gap: 10mm !important;
+        max-width: none !important;
+        margin: 0 !important;
+    }
+
+    .content-section {
+        box-shadow: none !important;
+        border: 1px solid #ccc;
+        padding: 10mm !important;
+        margin-bottom: 0 !important;
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        page-break-inside: avoid;
+         overflow: visible !important;
+    }
+
+     /* Adjust the date summary for print */
+     .date-controls-summary {
+          display: block !important;
+          background-color: #f9f9f9 !important;
+          border: 1px solid #ccc !important;
+          border-radius: 5px !important;
+          padding: 8mm !important;
+          margin-bottom: 10mm !important;
+          text-align: left !important;
+          box-shadow: none !important;
+          font-size: 9pt !important;
+     }
+      .date-controls-summary .date-navigation { display: none !important; }
+      .daily-summary-info { width: auto !important; text-align: left !important; }
+      .daily-summary-info h4 {
+           font-size: 9pt !important;
+           border-bottom: none !important;
+           padding-bottom: 0 !important;
+           margin-bottom: 3px !important;
+      }
+      #currentTimeDisplay { font-weight: normal !important; font-size: 9pt !important; color: #000 !important; }
+      .daily-summary-info p {
+           font-size: 9pt !important;
+           margin-top: 5px !important;
+           color: #000 !important;
+           display: inline-block !important;
+           margin-right: 5px !important;
+      }
+       #summaryRoutineSubjects {
+            display: inline !important;
+            background-color: transparent !important;
+            color: #000 !important;
+            padding: 0 !important;
+            border: none !important;
+            border-radius: 0 !important;
+            margin-top: 0 !important;
+            font-weight: normal !important;
+            box-shadow: none !important;
+            text-align: left !important;
+       }
+
+
+    /* --- Routine Table Print --- */
+    /* Ensure table layout is used for print regardless of screen layout mode */
+    .routine-table-container,
+    .routine-table-container.is-card-layout {
+        display: block !important; /* Act as block */
+        overflow: visible !important;
+        max-height: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+     /* Ensure table elements display correctly in print */
+     #routineTable,
+     .routine-table-container.is-card-layout #routineTable {
+          display: table !important;
+          width: 100% !important;
+          border-collapse: collapse !important;
+          border-spacing: 0 !important;
+          box-shadow: none !important;
+          border: 1px solid #333 !important;
+          font-size: 9pt !important; /* Consistent table font size for print */
+          margin: 0 !important;
+          border-radius: 0 !important;
+          overflow: visible !important;
+     }
+     #routineTable thead,
+     .routine-table-container.is-card-layout #routineTable thead {
+          display: table-header-group !important;
+          background-color: #eee !important;
+          color: #000000 !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+     }
+      #routineTable tbody,
+      .routine-table-container.is-card-layout #routineTable tbody { display: table-row-group !important; }
+      #routineTable tr,
+      .routine-table-container.is-card-layout #routineTable tr {
+           display: table-row !important;
+           background-color: transparent !important;
+      }
+       /* Ensure no row-specific card styles in print */
+       .routine-table-container.is-card-layout #routineTable tr {
+            margin-bottom: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+       }
+       /* Remove striped row background from cells in print */
+      #routineTable tbody tr:nth-child(even) td,
+      #routineTable tbody tr:nth-child(odd) td {
+           background-color: #ffffff !important;
+      }
+
+
+    #routineTable th, #routineTable td,
+    .routine-table-container.is-card-layout #routineTable th,
+    .routine-table-container.is-card-layout #routineTable td {
+        display: table-cell !important;
+        padding: 5px 8px !important;
+        text-align: left !important;
+        color: #000000 !important;
+        background-color: #ffffff !important;
+        word-break: break-word;
+        page-break-inside: avoid;
+        white-space: normal !important; /* Allow wrapping */
+        max-width: none !important;
+        min-width: auto !important;
+        border: 1px solid #666 !important; /* Apply standard print borders */
+    }
+     /* Ensure all borders are present for print table */
+     #routineTable th:last-child, #routineTable td:last-child,
+     #routineTable tbody tr:last-child td, #routineTable td:first-child,
+     .routine-table-container.is-card-layout #routineTable th:last-child,
+     .routine-table-container.is-card-layout #routineTable td:last-child,
+     .routine-table-container.is-card-layout #routineTable tbody tr:last-child td,
+     .routine-table-container.is-card-layout #routineTable td:first-child
+     {
+         border-right: 1px solid #666 !important;
+         border-bottom: 1px solid #666 !important;
+         border-left: 1px solid #666 !important;
+     }
+     #routineTable thead tr:last-child th,
+     .routine-table-container.is-card-layout #routineTable thead tr:last-child th {
+          border-bottom: 2px solid #666 !important;
+     }
+      #routineTable tbody tr:last-child td,
+      .routine-table-container.is-card-layout #routineTable tbody tr:last-child td {
+           border-bottom: 1px solid #666 !important;
+      }
+
+
+    #routineTable th {
+        font-weight: bold !important;
+        text-align: center !important;
+        border-bottom-width: 2px !important;
+        font-size: 10pt !important;
+    }
+
+    #routineTable td:first-child,
+     .routine-table-container.is-card-layout #routineTable td:first-child {
+        font-weight: bold !important;
+        background-color: #f9f9f9 !important;
+        text-align: center !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        font-size: 9pt !important;
+        /* Remove card-specific styling overrides in print */
+         flex-direction: row !important;
+         justify-content: center !important;
+         align-items: center !important;
+         padding-bottom: 5px !important;
+         margin-bottom: 0 !important;
+         width: auto !important;
+     }
+
+    /* Hide data labels in print */
+    #routineTable td::before,
+    .routine-table-container.is-card-layout #routineTable td::before
+    { display: none !important; }
+
+    #routineTable td[contenteditable="true"],
+    .routine-table-container.is-card-layout #routineTable td[contenteditable="true"] {
+        background-color: transparent !important;
+        outline: none !important;
+    }
+
+
+    #taskList {
+         list-style: disc !important;
+         margin-left: 15mm !important;
+         padding-left: 0 !important;
+         font-size: 9pt !important;
+    }
+    #taskList li {
+         background-color: #ffffff !important;
+         border: none !important;
+         box-shadow: none !important;
+         padding: 3px 0 !important;
+         margin-bottom: 3px !important;
+         opacity: 1 !important;
+         transform: none !important;
+         display: list-item !important;
+         text-decoration: none !important;
+         color: #000000 !important;
+         page-break-inside: avoid;
+    }
+     #taskList li.completed {
+          color: #555 !important;
+     }
+    #taskList li .task-content {
+         display: inline !important;
+         gap: 0 !important;
+         word-break: break-word;
+    }
+    #taskList li .task-subject,
+    #taskList li .task-time,
+    #taskList li .task-text {
+        padding: 0 !important;
+        border-radius: 0 !important;
+        background-color: transparent !important;
+        font-weight: normal !important;
+        color: #000000 !important;
+        display: inline !important;
+    }
+     #taskList li .task-subject { font-weight: bold !important; }
+     #taskList li .task-time { font-style: italic; margin-right: 5px; }
+     #taskList li .task-time:empty { display: none !important; }
+
+     /* Add space/separator between task parts */
+     #taskList li .task-subject:not(:empty)::after { content: ": "; }
+     #taskList li .task-time:not(:empty)::after { content: " - "; }
+
+}

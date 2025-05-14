@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>স্মার্ট স্টাডি প্ল্যানার</title>
+    <!-- Google Fonts for Bengali and Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="app-header">
+    <h1>স্মার্ট স্টাডি প্ল্যানার</h1>
+    <!-- Button to toggle between View and Edit modes -->
+    <button id="modeToggleBtn" class="btn btn-header-action" title="রুটিন ও টাস্ক এডিট/ভিউ করার জন্য মোড পরিবর্তন করুন"><i class="fas fa-eye"></i> ভিউ মোড</button>
+</header>
+
+<main class="app-container">
+    <!-- Section for Today's Plan (Daily View) -->
+    <section class="content-section daily-view-section">
+        <h2>আজকের প্ল্যান</h2>
+
+        <!-- Date Navigation and Summary -->
+        <div class="date-controls-summary">
+            <div class="date-navigation">
+                <button id="prevDayBtn" title="আগের দিন"><i class="fas fa-chevron-left"></i></button>
+                <button id="nextDayBtn" title="পরের দিন"><i class="fas fa-chevron-right"></i></button>
+                <input type="date" id="dateInput" title="নির্দিষ্ট তারিখে যান">
+            </div>
+            <div class="daily-summary-info">
+                <h4>তারিখ: <span id="summaryCurrentDate"></span> | সময়: <span id="currentTimeDisplay"></span></h4>
+                <p>আজকের রুটিন অনুযায়ী বিষয়:</p>
+                <span id="summaryRoutineSubjects"></span> <!-- Subjects displayed here -->
+            </div>
+        </div>
+
+        <!-- Task Management Area -->
+        <div class="task-management">
+            <!-- Form to add new tasks - hidden in View Mode by default CSS/JS -->
+            <div class="task-input-form-container hide-in-view">
+                <h3>নতুন কাজ যোগ করুন</h3>
+                <form id="taskForm" class="task-input-form">
+                    <select id="taskSubject" name="taskSubject" title="বিষয় নির্বাচন করুন" required>
+                        <option value="">বিষয় নির্বাচন করুন</option>
+                        <!-- Options populated by JS based on Routine -->
+                    </select>
+                    <input type="time" id="taskTime" name="taskTime" title="কাজের সময় (ঐচ্ছিক)">
+                    <input type="text" id="taskInput" placeholder="আজকের পাঠ্য/কাজ লিখুন..." required title="কাজের বিবরণ">
+                    <button type="submit" class="btn btn-secondary" title="নতুন কাজ যোগ করুন"><i class="fas fa-plus-circle"></i> কাজ যোগ করুন</button>
+                </form>
+            </div>
+
+            <!-- List to display daily tasks -->
+            <ul id="taskList">
+                <!-- Task items will be loaded here by JavaScript -->
+                <li class="no-tasks">কোনো কাজ লোড হচ্ছে...</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Aside Section for Weekly Routine -->
+    <aside class="content-section routine-view-section">
+         <h2>সাপ্তাহিক রুটিন</h2>
+
+        <!-- Header to toggle visibility of the routine table/cards -->
+        <div class="routine-toggle-header" id="routineToggleHeader" title="রুটিন টেবিল দেখান অথবা লুকান">
+             <span>রুটিন টেবিল দেখান/ লুকান</span>
+             <!-- Correct HTML comment for icon change state -->
+             <i class="fas fa-chevron-down"></i> <!-- Icon changes based on collapsed state -->
+        </div>
+
+        <!-- Container for the Routine Table/Cards - collapsed by default initially -->
+        <div class="routine-table-container collapsed" id="routineTableContainer">
+            <table id="routineTable">
+                <thead>
+                    <tr>
+                        <th>বার</th>
+                        <th>বিষয় ১ (সকাল)</th>
+                        <th>বিষয় ২ (দুপুর)</th>
+                        <th>বিষয় ৩ (বিকাল)</th>
+                        <th>বিষয় ৪ (রাত)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Routine data will be loaded here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Button Group for Routine Actions -->
+        <div class="button-group">
+            <!-- Save Routine button - hidden in View Mode -->
+            <!-- Correct HTML comment for Save Routine button state -->
+            <button id="saveRoutineBtn" class="btn btn-accent hide-in-view" title="রুটিনের পরিবর্তন সংরক্ষণ করুন"><i class="fas fa-save"></i> রুটিন সংরক্ষণ করুন</button>
+            <!-- Button to toggle between Table and Card layout -->
+            <!-- Correct HTML comment for toggle button -->
+            <button id="toggleRoutineLayoutBtn" class="btn btn-secondary" title="রুটিন টেবিলের প্রদর্শন স্টাইল পরিবর্তন করুন"><i class="fas fa-list"></i> কার্ড ভিউ</button> <!-- Initial text/icon set by JS -->
+            <!-- Print Routine button -->
+            <!-- Correct HTML comment for Print Routine button -->
+            <button id="printRoutineBtn" class="btn btn-print" title="রুটিন প্রিন্ট করুন"><i class="fas fa-print"></i> রুটিন প্রিন্ট করুন</button>
+        </div>
+    </aside>
+</main>
+
+<!-- Link to external JavaScript file -->
+<script src="script.js" defer></script>
+
+</body>
+</html>
